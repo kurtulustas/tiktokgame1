@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Canlı Yayın — İsim & Hediye Arenası</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --panel: rgba(13, 19, 34, 0.88);
+    --gold: #f5b942;
+    --teal: #38d9a9;
+    --crimson: #ff4d5e;
+    --sky: #4dabf7;
+    --text: #f8f9fa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: radial-gradient(circle at 50% 50%, #121b33 0%, #050810 100%);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+  }
+  body.transparent-bg { background: transparent !important; }
+  canvas { display: block; width: 100%; height: 100%; }
+
+  /* ÜST HUD */
+  #topHud {
+    position: fixed; top: 14px; left: 16px; right: 16px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    pointer-events: none; z-index: 10;
+  }
+  .status-box {
+    background: var(--panel); border: 2px solid rgba(255,255,255,0.14);
+    border-radius: 12px; padding: 10px 14px; backdrop-filter: blur(6px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  }
+  .conn-dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--crimson); margin-right: 6px; box-shadow: 0 0 8px var(--crimson);
+  }
+  .conn-dot.online { background: var(--teal); box-shadow: 0 0 10px var(--teal); }
+  .title-text { font-weight: 900; font-size: 16px; letter-spacing: 0.5px; color: var(--gold); }
+  .sub-text { font-size: 12px; color: #cbd5e1; margin-top: 3px; }
+
+  /* LİDERLİK TABLOSU */
+  #leaderboard {
+    width: 230px; background: var(--panel);
+    border: 2px solid rgba(245, 185, 66, 0.4); border-radius: 12px;
+    padding: 10px 12px; backdrop-filter: blur(6px);
+  }
+  #leaderboard h3 {
+    font-size: 13px; color: var(--gold); margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 4px;
+    display: flex; justify-content: space-between;
+  }
+  .lb-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12.5px; padding: 3px 0; font-weight: 600;
+  }
+  .lb-name { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-ko { color: var(--teal); font-weight: 800; }
+
+  /* DEV HEDİYE BANNER */
+  #megaBanner {
+    position: fixed; top: 88px; left: 50%; transform: translateX(-50%) scale(0.8);
+    background: linear-gradient(90deg, #ff4d5e, #f5b942, #ff4d5e);
+    color: #090c14; font-weight: 900; font-size: 20px;
+    padding: 10px 26px; border-radius: 999px; border: 3px solid #fff;
+    box-shadow: 0 0 35px rgba(245, 185, 66, 0.85);
+    opacity: 0; pointer-events: none; transition: all 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    z-index: 20; white-space: nowrap;
+  }
+  #megaBanner.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+  /* KAZANAN EKRANI */
+  #winnerOverlay {
+    position: fixed; inset: 0; background: rgba(5, 8, 16, 0.78);
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 30; text-align: center; backdrop-filter: blur(4px);
+  }
+  .win-crown { font-size: 64px; animation: bounce 0.8s infinite alternate; }
+  .win-title { font-size: 22px; color: var(--gold); font-weight: 900; margin-top: 6px; }
+  .win-name {
+    font-size: 40px; font-weight: 900; color: #fff;
+    text-shadow: 0 0 24px var(--teal); margin: 8px 0;
+  }
+  .win-sub { font-size: 15px; color: #cbd5e1; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+
+  /* ALT KONTROL & TEST PANELİ */
+  #controlBar {
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    background: var(--panel); border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 14px; padding: 8px 12px; display: flex; flex-wrap: wrap;
+    gap: 6px; align-items: center; z-index: 25; backdrop-filter: blur(6px);
+  }
+  #controlBar.hidden-bar { opacity: 0.12; }
+  #controlBar.hidden-bar:hover { opacity: 1; }
+  .btn {
+    background: #1b2642; color: #fff; border: 1px solid #36497a;
+    padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: 0.15s;
+  }
+  .btn:hover { background: #293961; border-color: var(--gold); }
+  .btn.rose { border-color: #ff6b81; color: #ff9ff3; }
+  .btn.spike { border-color: #f5b942; color: #ffd175; }
+  .btn.boss { border-color: #ff4d5e; background: #4a121b; color: #fff; }
+  .btn.teal { border-color: var(--teal); color: var(--teal); }
+</style>
+</head>
+<body>
+
+<div id="topHud">
+  <div class="status-box">
+    <div class="title-text">⚔️ İSİM & HEDİYE ARENASI</div>
+    <div class="sub-text">
+      <span class="conn-dot" id="connDot"></span>
+      <span id="connText">TikFinity Bekleniyor (Test Modu Aktif)</span>
+    </div>
+    <div class="sub-text" style="color:var(--teal);font-weight:700;margin-top:4px;">
+      💬 Yorum Yaz = Katıl • 🌹 Gül = Büyü • ☕ Kahve = Diken • 🦁 Aslan = DEV BOSS
+    </div>
+  </div>
+
+  <div id="leaderboard">
+    <h3><span>🏆 ARENA SIRALAMASI</span><span id="aliveCount">0 Kişi</span></h3>
+    <div id="lbList"></div>
+  </div>
+</div>
+
+<div id="megaBanner">👑 @KULLANICI DEV BOSS OLDU!</div>
+
+<div id="winnerOverlay">
+  <div class="win-crown">👑</div>
+  <div class="win-title">ARENANIN ŞAMPİYONU</div>
+  <div class="win-name" id="winName">@kazanan</div>
+  <div class="win-sub" id="winStats">Yeni tur 5 saniye içinde başlıyor...</div>
+</div>
+
+<canvas id="arenaCanvas"></canvas>
+
+<div id="controlBar">
+  <button class="btn teal" onclick="spawnBotWave(8)">➕ +8 Test Oyuncu</button>
+  <button class="btn rose" onclick="triggerRandomGift('rose')">🌹 Gül (Büyü) [1]</button>
+  <button class="btn" onclick="triggerRandomGift('speed')">⚡ Kalp (Hız) [2]</button>
+  <button class="btn spike" onclick="triggerRandomGift('spike')">⚙️ Kahve (Diken) [3]</button>
+  <button class="btn boss" onclick="triggerRandomGift('boss')">🦁 Aslan (DEV BOSS) [4]</button>
+  <button class="btn" onclick="toggleTransparent()">🪟 Şeffaf Arka Plan</button>
+  <button class="btn" onclick="toggleBarVisibility()">👁️ Yayın Modu</button>
+</div>
+
+<script>
+const canvas = document.getElementById('arenaCanvas');
+const ctx = canvas.getContext('2d');
+
+let W = canvas.width = window.innerWidth;
+let H = canvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+});
+
+/* ================= SES EFEKTLERİ (WEB AUDIO) ================= */
+let audioCtx = null;
+function playHitSound(freq = 180, dur = 0.06, vol = 0.04) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(55, audioCtx.currentTime + dur);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + dur);
+  } catch (e) {}
+}
+
+/* ================= OYUN DEĞİŞKENLERİ ================= */
+const players = new Map();
+const particles = [];
+const floatingTexts = [];
+const avatarCache = new Map();
+
+let baseArenaRadius = Math.min(W, H) * 0.41;
+let currentArenaRadius = baseArenaRadius;
+let screenShake = 0;
+let roundActive = true;
+let bannerTimer = null;
+
+const COLORS = [
+  '#ff4d5e', '#38d9a9', '#4dabf7', '#f5b942', '#da77f2',
+  '#ff922b', '#69db7c', '#748ffc', '#f783ac', '#3bc9db'
+];
+
+function getAvatarImg(url) {
+  if (!url) return null;
+  if (avatarCache.has(url)) return avatarCache.get(url);
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = url;
+  avatarCache.set(url, img);
+  return img;
+}
+
+function showMegaBanner(text) {
+  const b = document.getElementById('megaBanner');
+  b.textContent = text;
+  b.classList.add('show');
+  if (bannerTimer) clearTimeout(bannerTimer);
+  bannerTimer = setTimeout(() => b.classList.remove('show'), 3200);
+}
+
+function addFloatingText(x, y, text, color = '#ffd175') {
+  floatingTexts.push({ x, y, text, color, life: 1.0 });
+}
+
+function spawnParticles(x, y, color, count = 12) {
+  for (let i = 0; i < count; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const spd = 1.5 + Math.random() * 4.5;
+    particles.push({
+      x, y,
+      vx: Math.cos(ang) * spd,
+      vy: Math.sin(ang) * spd,
+      color,
+      size: 2.5 + Math.random() * 3.5,
+      life: 1.0
+    });
+  }
+}
+
+/* ================= OYUNCU OLUŞTURMA & HEDİYE GÜÇLERİ ================= */
+function joinOrUpdatePlayer(username, avatarUrl = '') {
+  if (!roundActive) return null;
+  const key = username.toLowerCase();
+  if (players.has(key)) {
+    const p = players.get(key);
+    if (!p.alive) {
+      // Elenen izleyici tekrar yorum/hediye atarsa arenaya geri döner!
+      revivePlayer(p);
+    }
+    return p;
+  }
+
+  const cx = W / 2, cy = H / 2;
+  const angle = Math.random() * Math.PI * 2;
+  const dist = Math.random() * (currentArenaRadius * 0.62);
+  const spd = 2.4 + Math.random() * 1.8;
+  const moveAng = Math.random() * Math.PI * 2;
+
+  const player = {
+    id: key,
+    name: username,
+    avatarUrl,
+    x: cx + Math.cos(angle) * dist,
+    y: cy + Math.sin(angle) * dist,
+    vx: Math.cos(moveAng) * spd,
+    vy: Math.sin(moveAng) * spd,
+    radius: 22,
+    mass: 1.0,
+    color: COLORS[players.size % COLORS.length],
+    alive: true,
+    kills: 0,
+    hasSpikes: false,
+    spikeAngle: 0,
+    isBoss: false,
+    lastHitBy: null,
+    trail: []
+  };
+
+  players.set(key, player);
+  spawnParticles(player.x, player.y, player.color, 14);
+  addFloatingText(player.x, player.y - 26, `+ ${username}`, '#38d9a9');
+  updateLeaderboard();
+  return player;
+}
+
+function revivePlayer(p) {
+  const cx = W / 2, cy = H / 2;
+  const ang = Math.random() * Math.PI * 2;
+  const dist = Math.random() * (currentArenaRadius * 0.45);
+  p.x = cx + Math.cos(ang) * dist;
+  p.y = cy + Math.sin(ang) * dist;
+  p.vx = (Math.random() - 0.5) * 5;
+  p.vy = (Math.random() - 0.5) * 5;
+  p.radius = 22;
+  p.mass = 1.0;
+  p.alive = true;
+  p.hasSpikes = false;
+  p.isBoss = false;
+  p.lastHitBy = null;
+  spawnParticles(p.x, p.y, '#38d9a9', 16);
+  addFloatingText(p.x, p.y - 26, `🔄 ${p.name} DÖNDÜ!`, '#38d9a9');
+}
+
+function applyGiftEffect(username, giftType, giftLabel = '', avatarUrl = '') {
+  const p = joinOrUpdatePlayer(username, avatarUrl);
+  if (!p) return;
+
+  if (giftType === 'rose') {
+    p.radius = Math.min(68, p.radius + 6);
+    p.mass += 0.45;
+    spawnParticles(p.x, p.y, '#ff6b81', 16);
+    addFloatingText(p.x, p.y - p.radius - 10, `🌹 +BÜYÜME (${p.name})`, '#ff8787');
+    playHitSound(340, 0.09, 0.06);
+  }
+  else if (giftType === 'speed') {
+    const ang = Math.atan2(p.vy, p.vx) || Math.random() * Math.PI * 2;
+    p.vx = Math.cos(ang) * 9.5;
+    p.vy = Math.sin(ang) * 9.5;
+    spawnParticles(p.x, p.y, '#4dabf7', 18);
+    addFloatingText(p.x, p.y - p.radius - 10, `⚡ TURBO HIZ!`, '#74c0fc');
+    playHitSound(480, 0.08, 0.06);
+  }
+  else if (giftType === 'spike') {
+    p.hasSpikes = true;
+    p.radius = Math.min(72, p.radius + 4);
+    p.mass += 0.5;
+    spawnParticles(p.x, p.y, '#f5b942', 20);
+    addFloatingText(p.x, p.y - p.radius - 10, `⚙️ DİKENLİ ZIRH!`, '#ffd175');
+    playHitSound(420, 0.12, 0.07);
+  }
+  else if (giftType === 'boss') {
+    p.isBoss = true;
+    p.hasSpikes = true;
+    p.radius = Math.min(86, Math.max(58, p.radius + 24));
+    p.mass += 2.5;
+    screenShake = 18;
+    spawnParticles(p.x, p.y, '#ffd43b', 35);
+    showMegaBanner(`👑 ${p.name.toUpperCase()} DEV BOSS OLDU!`);
+    addFloatingText(p.x, p.y - p.radius - 14, `👑 DEV BOSS!`, '#ffd43b');
+    playHitSound(140, 0.25, 0.1);
+  }
+  updateLeaderboard();
+}
+
+/* ================= FİZİK MOTORU & ÇARPIŞMA ================= */
+function updatePhysics() {
+  const cx = W / 2, cy = H / 2;
+  baseArenaRadius = Math.min(W, H) * 0.42;
+
+  const aliveList = Array.from(players.values()).filter(p => p.alive);
+
+  // Arenada 2+ kişi varsa arena çok yavaş daralır
+  if (roundActive && aliveList.length >= 2 && currentArenaRadius > 140) {
+    currentArenaRadius -= 0.025;
+  } else if (aliveList.length < 2) {
+    currentArenaRadius += (baseArenaRadius - currentArenaRadius) * 0.05;
+  }
+
+  for (let i = 0; i < aliveList.length; i++) {
+    const p = aliveList[i];
+
+    // Minimum hareket enerjisini koru (durmasınlar)
+    const speed = Math.hypot(p.vx, p.vy);
+    if (speed < 2.2) {
+      const a = Math.atan2(p.vy, p.vx) || Math.random() * Math.PI * 2;
+      p.vx = Math.cos(a) * 2.5;
+      p.vy = Math.sin(a) * 2.5;
+    } else if (speed > 11) {
+      p.vx *= 0.96;
+      p.vy *= 0.96;
+    }
+
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.hasSpikes) p.spikeAngle += 0.08;
+
+    // İz efekti
+    p.trail.push({ x: p.x, y: p.y });
+    if (p.trail.length > 7) p.trail.shift();
+
+    // Arena sınırından dışarı düşme kontrolü
+    const distFromCenter = Math.hypot(p.x - cx, p.y - cy);
+    if (distFromCenter - p.radius * 0.35 > currentArenaRadius) {
+      p.alive = false;
+      spawnParticles(p.x, p.y, '#ff4d5e', 24);
+      playHitSound(110, 0.15, 0.07);
+
+      if (p.lastHitBy && players.has(p.lastHitBy)) {
+        const killer = players.get(p.lastHitBy);
+        killer.kills++;
+        killer.radius = Math.min(75, killer.radius + 2);
+        addFloatingText(p.x, p.y, `💥 ${killer.name} eledi!`, '#ff8787');
+      } else {
+        addFloatingText(p.x, p.y, `💀 ${p.name} düştü!`, '#94a3b8');
+      }
+      updateLeaderboard();
+      checkRoundWinner();
+    }
+  }
+
+  // Toplar arası elastik çarpışma
+  for (let i = 0; i < aliveList.length; i++) {
+    for (let j = i + 1; j < aliveList.length; j++) {
+      const a = aliveList[i];
+      const b = aliveList[j];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.hypot(dx, dy);
+      const minDist = a.radius + b.radius;
+
+      if (dist > 0 && dist < minDist) {
+        const nx = dx / dist;
+        const ny = dy / dist;
+
+        // İç içe geçmeyi ayır
+        const overlap = minDist - dist;
+        const totalMass = a.mass + b.mass;
+        a.x -= nx * overlap * (b.mass / totalMass);
+        a.y -= ny * overlap * (b.mass / totalMass);
+        b.x += nx * overlap * (a.mass / totalMass);
+        b.y += ny * overlap * (a.mass / totalMass);
+
+        // Göreceli hız ve itme kuvveti (Diken varsa ekstra fırlatma)
+        const rvx = b.vx - a.vx;
+        const rvy = b.vy - a.vy;
+        const velAlongNormal = rvx * nx + rvy * ny;
+
+        if (velAlongNormal < 0) {
+          let restitution = 1.15;
+          if (a.hasSpikes || b.hasSpikes) restitution = 1.48;
+
+          const impulse = -(1 + restitution) * velAlongNormal / (1 / a.mass + 1 / b.mass);
+          const ix = impulse * nx;
+          const iy = impulse * ny;
+
+          a.vx -= ix / a.mass;
+          a.vy -= iy / a.mass;
+          b.vx += ix / b.mass;
+          b.vy += iy / b.mass;
+
+          a.lastHitBy = b.id;
+          b.lastHitBy = a.id;
+
+          const midX = (a.x + b.x) / 2;
+          const midY = (a.y + b.y) / 2;
+          spawnParticles(midX, midY, '#ffffff', 5);
+          playHitSound(190 + Math.random() * 80, 0.04, 0.025);
+        }
+      }
+    }
+  }
+}
+
+function checkRoundWinner() {
+  if (!roundActive) return;
+  const alive = Array.from(players.values()).filter(p => p.alive);
+  if (players.size >= 2 && alive.length === 1) {
+    roundActive = false;
+    const champ = alive[0];
+    document.getElementById('winName').textContent = `@${champ.name}`;
+    document.getElementById('winStats').textContent = `Toplam Eleme: ${champ.kills} Kişi • Yeni tur 5 saniye içinde başlıyor...`;
+    document.getElementById('winnerOverlay').style.display = 'flex';
+    playHitSound(520, 0.3, 0.09);
+
+    setTimeout(() => {
+      document.getElementById('winnerOverlay').style.display = 'none';
+      currentArenaRadius = baseArenaRadius;
+      players.forEach(p => revivePlayer(p));
+      roundActive = true;
+      updateLeaderboard();
+    }, 5000);
+  }
+}
+
+/* ================= ÇİZİM MOTORU ================= */
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+
+  if (screenShake > 0) {
+    ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
+    screenShake *= 0.88;
+    if (screenShake < 0.5) screenShake = 0;
+  }
+
+  const cx = W / 2, cy = H / 2;
+
+  // Arena Zemin & Tehlike Çemberi
+  ctx.beginPath();
+  ctx.arc(cx, cy, currentArenaRadius, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+  ctx.fill();
+
+  // İç ızgara halkaları
+  ctx.strokeStyle = 'rgba(56, 217, 169, 0.14)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, currentArenaRadius * 0.65, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, currentArenaRadius * 0.3, 0, Math.PI * 2); ctx.stroke();
+
+  // Dış Ateş / Lazer Sınırı
+  ctx.beginPath();
+  ctx.arc(cx, cy, currentArenaRadius, 0, Math.PI * 2);
+  ctx.strokeStyle = '#ff4d5e';
+  ctx.lineWidth = 6;
+  ctx.shadowColor = '#ff4d5e';
+  ctx.shadowBlur = 18;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Parçacıklar
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const pt = particles[i];
+    pt.x += pt.vx; pt.y += pt.vy;
+    pt.life -= 0.035;
+    if (pt.life <= 0) { particles.splice(i, 1); continue; }
+    ctx.globalAlpha = pt.life;
+    ctx.fillStyle = pt.color;
+    ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Oyuncu Topları
+  players.forEach(p => {
+    if (!p.alive) return;
+
+    // Hareket izi
+    for (let t = 0; t < p.trail.length; t++) {
+      const tr = p.trail[t];
+      ctx.globalAlpha = (t / p.trail.length) * 0.22;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(tr.x, tr.y, p.radius * (t / p.trail.length), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Dikenli Testere Halkası (Kahve/Taco hediyesi)
+    if (p.hasSpikes) {
+      const spikes = 12;
+      ctx.fillStyle = '#f5b942';
+      for (let s = 0; s < spikes; s++) {
+        const a = p.spikeAngle + (s * Math.PI * 2) / spikes;
+        const sx = p.x + Math.cos(a) * (p.radius + 7);
+        const sy = p.y + Math.sin(a) * (p.radius + 7);
+        ctx.beginPath();
+        ctx.arc(sx, sy, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Ana Küre
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+    ctx.clip();
+
+    // Profil Fotoğrafı Varsa Çiz
+    const img = getAvatarImg(p.avatarUrl);
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.drawImage(img, p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
+    } else {
+      // Baş harf rozeti
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillRect(p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
+      ctx.fillStyle = '#fff';
+      ctx.font = `900 ${Math.max(13, Math.round(p.radius * 0.75))}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.name.slice(0, 2).toUpperCase(), p.x, p.y);
+    }
+    ctx.restore();
+
+    // Dış Çerçeve
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.lineWidth = p.isBoss ? 4.5 : 2.8;
+    ctx.strokeStyle = p.isBoss ? '#ffd43b' : '#ffffff';
+    ctx.stroke();
+
+    // KULLANICI ADI ETİKETİ (HERKES KENDİ ADINI NET GÖRÜR)
+    const label = p.isBoss ? `👑 ${p.name}` : p.name;
+    ctx.font = '800 13px sans-serif';
+    const textW = ctx.measureText(label).width;
+    const tagY = p.y - p.radius - 16;
+
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.85)';
+    ctx.beginPath();
+    ctx.roundRect(p.x - textW / 2 - 7, tagY - 10, textW + 14, 18, 6);
+    ctx.fill();
+
+    ctx.fillStyle = p.isBoss ? '#ffd43b' : '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, p.x, tagY - 1);
+  });
+
+  // Uçan Bildirim Metinleri
+  for (let i = floatingTexts.length - 1; i >= 0; i--) {
+    const ft = floatingTexts[i];
+    ft.y -= 0.9;
+    ft.life -= 0.018;
+    if (ft.life <= 0) { floatingTexts.splice(i, 1); continue; }
+    ctx.globalAlpha = ft.life;
+    ctx.font = '900 14px sans-serif';
+    ctx.fillStyle = ft.color;
+    ctx.textAlign = 'center';
+    ctx.fillText(ft.text, ft.x, ft.y);
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.restore();
+}
+
+function updateLeaderboard() {
+  const all = Array.from(players.values());
+  const alive = all.filter(p => p.alive);
+  document.getElementById('aliveCount').textContent = `${alive.length} / ${all.length} Kişi`;
+
+  const sorted = [...alive].sort((a, b) => (b.kills * 10 + b.radius) - (a.kills * 10 + a.radius)).slice(0, 6);
+  const list = document.getElementById('lbList');
+  list.innerHTML = sorted.map((p, idx) => `
+    <div class="lb-row">
+      <span class="lb-name">${idx === 0 ? '👑' : (idx + 1) + '.'} ${p.name}</span>
+      <span class="lb-ko">${p.kills} KO</span>
+    </div>
+  `).join('');
+}
+
+/* ================= TIKFINITY CANLI YAYIN WEBSOCKET BAĞLANTISI ================= */
+function connectTikFinity() {
+  try {
+    const ws = new WebSocket('ws://localhost:21213/');
+    ws.onopen = () => {
+      document.getElementById('connDot').classList.add('online');
+      document.getElementById('connText').textContent = 'TikTok Canlı Yayın Bağlı!';
+    };
+    ws.onmessage = (event) => {
+      try {
+        const packet = JSON.parse(event.data);
+        const ev = packet.event;
+        const d = packet.data || {};
+        const user = d.nickname || d.uniqueId || 'İzleyici';
+        const avatar = d.profilePictureUrl || '';
+
+        if (ev === 'chat' || ev === 'like' || ev === 'member') {
+          joinOrUpdatePlayer(user, avatar);
+        } else if (ev === 'gift') {
+          const coins = (d.diamondCount || 1) * (d.repeatCount || 1);
+          if (coins >= 100) applyGiftEffect(user, 'boss', d.giftName, avatar);
+          else if (coins >= 10) applyGiftEffect(user, 'spike', d.giftName, avatar);
+          else if (coins >= 2) applyGiftEffect(user, 'speed', d.giftName, avatar);
+          else applyGiftEffect(user, 'rose', d.giftName, avatar);
+        }
+      } catch (err) {}
+    };
+    ws.onclose = () => {
+      document.getElementById('connDot').classList.remove('online');
+      document.getElementById('connText').textContent = 'TikFinity Bekleniyor (Test Modu Aktif)';
+      setTimeout(connectTikFinity, 4000);
+    };
+  } catch (e) {}
+}
+connectTikFinity();
+
+/* ================= TEST & YAYIN KONTROLLERİ ================= */
+const SAMPLE_NAMES = [
+  'ahmet_ydz', 'zeynep.k', 'kurtulustas', 'emre_09', 'selinaydin',
+  'kerem_tr', 'elif.dr', 'burak112', 'mert_can', 'ayse_nur',
+  'kaan_bjk', 'deniz_gs', 'arda_fb', 'melis_x', 'efe_pro'
+];
+
+function spawnBotWave(count = 6) {
+  for (let i = 0; i < count; i++) {
+    const base = SAMPLE_NAMES[Math.floor(Math.random() * SAMPLE_NAMES.length)];
+    const name = `${base}_${Math.floor(10 + Math.random() * 89)}`;
+    joinOrUpdatePlayer(name);
+  }
+}
+
+function triggerRandomGift(type) {
+  const alive = Array.from(players.values()).filter(p => p.alive);
+  if (alive.length === 0) spawnBotWave(6);
+  const currentAlive = Array.from(players.values()).filter(p => p.alive);
+  const pick = currentAlive[Math.floor(Math.random() * currentAlive.length)];
+  if (pick) applyGiftEffect(pick.name, type);
+}
+
+function toggleTransparent() {
+  document.body.classList.toggle('transparent-bg');
+}
+
+function toggleBarVisibility() {
+  document.getElementById('controlBar').classList.toggle('hidden-bar');
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === '1') triggerRandomGift('rose');
+  else if (e.key === '2') triggerRandomGift('speed');
+  else if (e.key === '3') triggerRandomGift('spike');
+  else if (e.key === '4') triggerRandomGift('boss');
+});
+
+// Açılışta arena boş kalmasın diye 6 örnek oyuncu ile başlat
+spawnBotWave(6);
+
+function loop() {
+  updatePhysics();
+  render();
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
