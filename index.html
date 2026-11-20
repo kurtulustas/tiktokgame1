@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TikTok Canlı Yayın — Dinamik Haritalı 10 HP Çarpışma Arenası</title>
+<title>TikTok Canlı Yayın — Yüksek Performanslı 10 HP Çarpışma Arenası</title>
 <style>
   :root {
     --bg: #070b14;
@@ -47,6 +47,14 @@
     border: 1px solid var(--teal); color: var(--teal);
     padding: 1px 7px; border-radius: 6px; font-weight: 900;
   }
+  .gift-grid {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+  }
+  .gift-pill {
+    background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(245, 185, 66, 0.35);
+    border-radius: 7px; padding: 3px 8px; font-size: 11.5px; font-weight: 800; color: #fff;
+  }
+  .gift-pill span { color: var(--gold); }
 
   /* LİDERLİK TABLOSU */
   #leaderboard {
@@ -68,7 +76,7 @@
 
   /* DEV HEDİYE BANNER */
   #megaBanner {
-    position: fixed; top: 92px; left: 50%; transform: translateX(-50%) scale(0.8);
+    position: fixed; top: 104px; left: 50%; transform: translateX(-50%) scale(0.8);
     background: linear-gradient(90deg, #ff4d5e, #f5b942, #ff4d5e);
     color: #090c14; font-weight: 900; font-size: 20px;
     padding: 10px 26px; border-radius: 999px; border: 3px solid #fff;
@@ -93,25 +101,28 @@
   .win-sub { font-size: 15px; color: #cbd5e1; }
   @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
 
-  /* ALT KONTROL & TEST PANELİ */
+  /* ALT KONTROL & BOT PANELİ */
   #controlBar {
-    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
     background: var(--panel); border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 14px; padding: 8px 12px; display: flex; flex-wrap: wrap;
-    gap: 6px; align-items: center; z-index: 25; backdrop-filter: blur(6px);
+    border-radius: 14px; padding: 7px 10px; display: flex; flex-wrap: wrap;
+    justify-content: center; gap: 5px; align-items: center; z-index: 25;
+    backdrop-filter: blur(6px); max-width: 96vw;
   }
-  #controlBar.hidden-bar { opacity: 0.12; }
+  #controlBar.hidden-bar { opacity: 0.08; }
   #controlBar.hidden-bar:hover { opacity: 1; }
   .btn {
     background: #1b2642; color: #fff; border: 1px solid #36497a;
-    padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;
-    cursor: pointer; transition: 0.15s;
+    padding: 5px 9px; border-radius: 8px; font-size: 11.5px; font-weight: 700;
+    cursor: pointer; transition: 0.15s; white-space: nowrap;
   }
   .btn:hover { background: #293961; border-color: var(--gold); }
   .btn.rose { border-color: #ff6b81; color: #ff9ff3; }
   .btn.spike { border-color: #f5b942; color: #ffd175; }
   .btn.boss { border-color: #ff4d5e; background: #4a121b; color: #fff; }
   .btn.teal { border-color: var(--teal); color: var(--teal); }
+  .btn.danger { border-color: #ff4d5e; color: #ff8787; }
+  .divider { width: 1px; height: 20px; background: rgba(255,255,255,0.16); margin: 0 2px; }
 </style>
 </head>
 <body>
@@ -126,8 +137,11 @@
     <div class="sub-text" style="color:#f8f9fa;font-weight:700;margin-top:5px;">
       💬 Katılmak için sohbete <span class="cmd-badge">katıl</span> yaz! (10 HP)
     </div>
-    <div class="sub-text" style="color:var(--gold);font-weight:700;margin-top:3px;">
-      🌹 Gül = +3 HP • ⚡ Kalp = +2 HP & Hız • ☕ Kahve = +4 HP & Diken • 🦁 Aslan = 25 HP BOSS
+    <div class="gift-grid">
+      <div class="gift-pill">🌹 <span>1 Jeton:</span> +3 HP & Büyü</div>
+      <div class="gift-pill">⚡ <span>5 Jeton:</span> +2 HP & Hız</div>
+      <div class="gift-pill">⚙️ <span>10 Jeton:</span> +4 HP & Diken</div>
+      <div class="gift-pill">👑 <span>100 Jeton:</span> 25+ HP DEV BOSS</div>
     </div>
   </div>
 
@@ -149,18 +163,23 @@
 <canvas id="arenaCanvas"></canvas>
 
 <div id="controlBar">
-  <button class="btn teal" onclick="spawnBotWave(8)">💬 Test: +8 Kişi "katıl"</button>
-  <button class="btn rose" onclick="triggerRandomGift('rose')">🌹 Gül (+3 HP) [1]</button>
-  <button class="btn" onclick="triggerRandomGift('speed')">⚡ Kalp (+2 HP & Hız) [2]</button>
-  <button class="btn spike" onclick="triggerRandomGift('spike')">⚙️ Kahve (+4 HP & Diken) [3]</button>
-  <button class="btn boss" onclick="triggerRandomGift('boss')">🦁 Aslan (25 HP BOSS) [4]</button>
-  <button class="btn" onclick="toggleTransparent()">🪟 Şeffaf Arka Plan</button>
-  <button class="btn" onclick="toggleBarVisibility()">👁️ Yayın Modu</button>
+  <button class="btn teal" onclick="spawnBotWave(10)">🤖 +10 Bot</button>
+  <button class="btn teal" onclick="spawnBotWave(50)">🤖 +50 Bot</button>
+  <button class="btn teal" onclick="spawnBotWave(250)">🔥 +250 Bot</button>
+  <button class="btn danger" onclick="clearBotsOnly()">🧹 Botları Sil</button>
+  <div class="divider"></div>
+  <button class="btn rose" onclick="triggerRandomGift('rose')">🌹 1 Jeton [1]</button>
+  <button class="btn" onclick="triggerRandomGift('speed')">⚡ 5 Jeton [2]</button>
+  <button class="btn spike" onclick="triggerRandomGift('spike')">⚙️ 10 Jeton [3]</button>
+  <button class="btn boss" onclick="triggerRandomGift('boss')">👑 100 Jeton [4]</button>
+  <div class="divider"></div>
+  <button class="btn" onclick="toggleTransparent()">🪟 Şeffaf</button>
+  <button class="btn" onclick="toggleBarVisibility()">👁️ Gizle</button>
 </div>
 
 <script>
 const canvas = document.getElementById('arenaCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha: true });
 
 let W = canvas.width = window.innerWidth;
 let H = canvas.height = window.innerHeight;
@@ -169,9 +188,13 @@ window.addEventListener('resize', () => {
   H = canvas.height = window.innerHeight;
 });
 
-/* ================= SES EFEKTLERİ ================= */
+/* ================= SES EFEKTLERİ (THROTTLED — KALABALIKTA KASMAZ) ================= */
 let audioCtx = null;
-function playHitSound(freq = 180, dur = 0.06, vol = 0.04) {
+let lastSoundTime = 0;
+function playHitSound(freq = 180, dur = 0.05, vol = 0.035) {
+  const now = performance.now();
+  if (now - lastSoundTime < 45) return; // Saniyede max ~22 ses efekti (audio lag önler)
+  lastSoundTime = now;
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -193,24 +216,36 @@ const particles = [];
 const floatingTexts = [];
 const avatarCache = new Map();
 
-let currentArenaRadius = Math.min(W, H) * 0.28;
+let currentArenaRadius = Math.min(W, H) * 0.32;
 let screenShake = 0;
 let roundActive = true;
 let bannerTimer = null;
+let lbDirty = true;
+
+const MAX_PARTICLES = 180;
+const MAX_FLOATING_TEXTS = 45;
 
 const COLORS = [
   '#ff4d5e', '#38d9a9', '#4dabf7', '#f5b942', '#da77f2',
   '#ff922b', '#69db7c', '#748ffc', '#f783ac', '#3bc9db'
 ];
 
-/* ================= KİŞİ SAYISINA GÖRE DİNAMİK HARİTA BOYUTU ================= */
+/* ================= KİŞİ SAYISINA GÖRE DİNAMİK HARİTA & TOP ÖLÇEĞİ ================= */
 function getTargetArenaRadius(aliveCount) {
   const minDim = Math.min(W, H);
-  const minR = minDim * 0.22; // Az kişi varken kompakt arena
-  const maxR = minDim * 0.45; // Çok kişi varken tam ekran arena
-  // Kişi sayısı arttıkça (2 -> 50 kişi arası) çember orantılı büyür
-  const ratio = Math.min(1, Math.max(0, (aliveCount - 2) / 42));
+  const minR = minDim * 0.24;
+  const maxR = minDim * 0.46;
+  const ratio = Math.min(1, Math.max(0, (aliveCount - 2) / 60));
   return minR + (maxR - minR) * Math.sqrt(ratio);
+}
+
+function getBaseRadiusForCount(aliveCount) {
+  if (aliveCount > 800) return 7;
+  if (aliveCount > 400) return 9;
+  if (aliveCount > 150) return 12;
+  if (aliveCount > 60) return 16;
+  if (aliveCount > 25) return 19;
+  return 23;
 }
 
 function getAvatarImg(url) {
@@ -232,66 +267,69 @@ function showMegaBanner(text) {
 }
 
 function addFloatingText(x, y, text, color = '#ffd175') {
+  if (floatingTexts.length >= MAX_FLOATING_TEXTS) floatingTexts.shift();
   floatingTexts.push({ x, y, text, color, life: 1.0 });
 }
 
-function spawnParticles(x, y, color, count = 12) {
-  for (let i = 0; i < count; i++) {
+function spawnParticles(x, y, color, count = 8) {
+  const allowed = Math.min(count, MAX_PARTICLES - particles.length);
+  for (let i = 0; i < allowed; i++) {
     const ang = Math.random() * Math.PI * 2;
-    const spd = 1.5 + Math.random() * 4.5;
+    const spd = 1.5 + Math.random() * 4.0;
     particles.push({
       x, y,
       vx: Math.cos(ang) * spd,
       vy: Math.sin(ang) * spd,
       color,
-      size: 2.5 + Math.random() * 3.5,
+      size: 2.2 + Math.random() * 2.8,
       life: 1.0
     });
   }
 }
 
-/* ================= "KATIL" KOMUTU & HEDİYE GÜÇLERİ ================= */
+/* ================= "KATIL" KOMUTU & JETON HEDİYE GÜÇLERİ ================= */
 function isJoinCommand(commentText) {
   if (!commentText) return false;
   const cleaned = commentText.trim().toLocaleLowerCase('tr-TR');
   return cleaned === 'katıl' || cleaned === 'katil' || cleaned.startsWith('katıl ') || cleaned.startsWith('katil ');
 }
 
-function joinOrUpdatePlayer(username, avatarUrl = '') {
+function joinOrUpdatePlayer(username, avatarUrl = '', isBot = false, silent = false) {
   if (!roundActive) return null;
   const key = username.toLowerCase();
   if (players.has(key)) {
     const p = players.get(key);
     if (avatarUrl && !p.avatarUrl) p.avatarUrl = avatarUrl;
     if (!p.alive) {
-      revivePlayer(p);
+      revivePlayer(p, silent);
     }
     return p;
   }
 
   const cx = W / 2, cy = H / 2;
-  const aliveCount = Array.from(players.values()).filter(p => p.alive).length + 1;
-  const targetR = getTargetArenaRadius(aliveCount);
-  const spawnR = Math.max(currentArenaRadius, targetR) * 0.55;
+  const currentTotal = players.size + 1;
+  const targetR = getTargetArenaRadius(currentTotal);
+  const spawnR = Math.max(currentArenaRadius, targetR) * 0.78;
 
   const angle = Math.random() * Math.PI * 2;
-  const dist = Math.random() * spawnR;
+  const dist = Math.sqrt(Math.random()) * spawnR; // Eşit alan dağılımı (merkezde yığılmayı önler)
   const spd = 2.4 + Math.random() * 1.4;
   const moveAng = Math.random() * Math.PI * 2;
-
-  // Çok kalabalık arenalarda toplar hafifçe daha kompakt başlar
-  const baseBallRadius = aliveCount > 35 ? 18 : (aliveCount > 20 ? 20 : 23);
+  const baseBallRadius = getBaseRadiusForCount(currentTotal);
 
   const player = {
     id: key,
     name: username,
     avatarUrl,
+    isBot,
+    boosted: false,
     x: cx + Math.cos(angle) * dist,
     y: cy + Math.sin(angle) * dist,
     vx: Math.cos(moveAng) * spd,
     vy: Math.sin(moveAng) * spd,
     hp: 10,
     maxHp: 10,
+    baseRadius: baseBallRadius,
     radius: baseBallRadius,
     mass: 1.0,
     color: COLORS[players.size % COLORS.length],
@@ -306,85 +344,96 @@ function joinOrUpdatePlayer(username, avatarUrl = '') {
   };
 
   players.set(key, player);
-  spawnParticles(player.x, player.y, player.color, 14);
-  addFloatingText(player.x, player.y - 30, `+ ${username} KATILDI (10 HP)`, '#38d9a9');
-  playHitSound(300, 0.07, 0.04);
-  updateLeaderboard();
+  if (!silent) {
+    spawnParticles(player.x, player.y, player.color, 8);
+    addFloatingText(player.x, player.y - 24, `+ ${username} (10 HP)`, '#38d9a9');
+    playHitSound(300, 0.06, 0.03);
+  }
+  lbDirty = true;
   return player;
 }
 
-function revivePlayer(p) {
+function revivePlayer(p, silent = false) {
   const cx = W / 2, cy = H / 2;
   const ang = Math.random() * Math.PI * 2;
-  const dist = Math.random() * (currentArenaRadius * 0.45);
+  const dist = Math.sqrt(Math.random()) * (currentArenaRadius * 0.65);
   p.x = cx + Math.cos(ang) * dist;
   p.y = cy + Math.sin(ang) * dist;
   p.vx = (Math.random() - 0.5) * 5;
   p.vy = (Math.random() - 0.5) * 5;
   p.hp = 10;
   p.maxHp = 10;
-  p.radius = 23;
+  p.radius = p.baseRadius;
   p.mass = 1.0;
   p.alive = true;
   p.hasSpikes = false;
   p.isBoss = false;
+  p.boosted = false;
   p.hitFlash = 0;
   p.hitCooldown.clear();
-  spawnParticles(p.x, p.y, '#38d9a9', 16);
-  addFloatingText(p.x, p.y - 30, `🔄 ${p.name} YENİDEN KATILDI (10 HP)`, '#38d9a9');
+  if (!silent) {
+    spawnParticles(p.x, p.y, '#38d9a9', 10);
+    addFloatingText(p.x, p.y - 24, `🔄 ${p.name} (10 HP)`, '#38d9a9');
+  }
+  lbDirty = true;
 }
 
 function applyGiftEffect(username, giftType, giftLabel = '', avatarUrl = '') {
-  const p = joinOrUpdatePlayer(username, avatarUrl);
+  const p = joinOrUpdatePlayer(username, avatarUrl, false, false);
   if (!p) return;
 
+  p.boosted = true;
+  const MAX_BALL_RADIUS = 84;
+
   if (giftType === 'rose') {
-    p.maxHp = Math.min(40, p.maxHp + 2);
-    p.hp = Math.min(p.maxHp, p.hp + 3);
-    p.radius = Math.min(58, p.radius + 3.5);
+    p.maxHp += 3;
+    p.hp += 3;
+    p.radius = Math.min(MAX_BALL_RADIUS, Math.max(p.radius, p.radius + 3));
     p.mass += 0.3;
-    spawnParticles(p.x, p.y, '#ff6b81', 16);
+    spawnParticles(p.x, p.y, '#ff6b81', 12);
     addFloatingText(p.x, p.y - p.radius - 14, `🌹 +3 HP (${p.hp}/${p.maxHp})`, '#69db7c');
-    playHitSound(360, 0.09, 0.06);
+    playHitSound(360, 0.08, 0.05);
   }
   else if (giftType === 'speed') {
-    p.hp = Math.min(p.maxHp, p.hp + 2);
+    p.maxHp += 2;
+    p.hp += 2;
     const ang = Math.atan2(p.vy, p.vx) || Math.random() * Math.PI * 2;
     p.vx = Math.cos(ang) * 7.5;
     p.vy = Math.sin(ang) * 7.5;
-    spawnParticles(p.x, p.y, '#4dabf7', 18);
-    addFloatingText(p.x, p.y - p.radius - 14, `⚡ +2 HP & HIZ!`, '#74c0fc');
-    playHitSound(480, 0.08, 0.06);
+    spawnParticles(p.x, p.y, '#4dabf7', 14);
+    addFloatingText(p.x, p.y - p.radius - 14, `⚡ +2 HP & HIZ! (${p.hp}/${p.maxHp})`, '#74c0fc');
+    playHitSound(480, 0.07, 0.05);
   }
   else if (giftType === 'spike') {
-    p.maxHp = Math.min(45, p.maxHp + 3);
-    p.hp = Math.min(p.maxHp, p.hp + 4);
+    p.maxHp += 4;
+    p.hp += 4;
     p.hasSpikes = true;
-    p.radius = Math.min(62, p.radius + 3.5);
+    p.radius = Math.min(MAX_BALL_RADIUS, Math.max(p.radius, p.radius + 3.5));
     p.mass += 0.45;
-    spawnParticles(p.x, p.y, '#f5b942', 20);
-    addFloatingText(p.x, p.y - p.radius - 14, `⚙️ +4 HP & DİKEN!`, '#ffd175');
-    playHitSound(420, 0.12, 0.07);
+    spawnParticles(p.x, p.y, '#f5b942', 16);
+    addFloatingText(p.x, p.y - p.radius - 14, `⚙️ +4 HP & DİKEN! (${p.hp}/${p.maxHp})`, '#ffd175');
+    playHitSound(420, 0.1, 0.06);
   }
   else if (giftType === 'boss') {
     p.isBoss = true;
     p.hasSpikes = true;
-    p.maxHp = Math.max(25, p.maxHp + 10);
+    p.maxHp = Math.max(25, p.maxHp + 15);
     p.hp = p.maxHp;
-    p.radius = Math.min(72, Math.max(48, p.radius + 16));
+    p.radius = Math.min(MAX_BALL_RADIUS, Math.max(p.radius + 10, 52));
     p.mass += 2.0;
-    screenShake = 18;
-    spawnParticles(p.x, p.y, '#ffd43b', 35);
+    screenShake = 16;
+    spawnParticles(p.x, p.y, '#ffd43b', 25);
     showMegaBanner(`👑 ${p.name.toUpperCase()} (${p.hp} HP) DEV BOSS OLDU!`);
-    addFloatingText(p.x, p.y - p.radius - 18, `👑 FULL CAN (${p.hp} HP)!`, '#ffd43b');
-    playHitSound(140, 0.25, 0.1);
+    addFloatingText(p.x, p.y - p.radius - 18, `👑 DEV BOSS (${p.hp} HP)!`, '#ffd43b');
+    playHitSound(140, 0.2, 0.08);
   }
-  updateLeaderboard();
+  lbDirty = true;
 }
 
-/* ================= FİZİK MOTORU: DUVARDAN ZARARSIZ SEKME & DİNAMİK ARENA ================= */
-function applyCollisionDamage(attacker, defender) {
-  const now = performance.now();
+/* ================= SPATIAL HASH GRID (BİNLERCE KİŞİDE ZERO-LAG FİZİK) ================= */
+const gridCells = new Map();
+
+function applyCollisionDamage(attacker, defender, now, isCrowded) {
   const lastHit = defender.hitCooldown.get(attacker.id) || 0;
   if (now - lastHit < 1200) return;
   defender.hitCooldown.set(attacker.id, now);
@@ -393,36 +442,54 @@ function applyCollisionDamage(attacker, defender) {
   if (attacker.isBoss || attacker.hasSpikes) dmg = 2;
 
   defender.hp = Math.max(0, defender.hp - dmg);
-  defender.hitFlash = 8;
+  defender.hitFlash = 6;
 
-  addFloatingText(defender.x, defender.y - defender.radius - 6, `-${dmg} HP`, '#ff4d5e');
+  if (!isCrowded || defender.boosted || attacker.boosted) {
+    addFloatingText(defender.x, defender.y - defender.radius - 6, `-${dmg} HP`, '#ff4d5e');
+  }
 
   if (defender.hp <= 0 && defender.alive) {
     defender.alive = false;
     attacker.kills++;
     attacker.hp = Math.min(attacker.maxHp, attacker.hp + 1);
-    spawnParticles(defender.x, defender.y, '#ff4d5e', 28);
-    screenShake = Math.max(screenShake, 7);
-    playHitSound(95, 0.18, 0.08);
-    addFloatingText(defender.x, defender.y - 22, `💀 ${attacker.name} YOK ETTİ!`, '#ffd175');
+    if (!isCrowded) {
+      spawnParticles(defender.x, defender.y, '#ff4d5e', 14);
+      playHitSound(95, 0.14, 0.06);
+    }
+    if (!isCrowded || defender.boosted || attacker.isBoss) {
+      addFloatingText(defender.x, defender.y - 20, `💀 ${attacker.name}`, '#ffd175');
+    }
+    lbDirty = true;
     checkRoundWinner();
   }
 }
 
 function updatePhysics() {
   const cx = W / 2, cy = H / 2;
-  const aliveList = Array.from(players.values()).filter(p => p.alive);
+  const aliveList = [];
+  players.forEach(p => { if (p.alive) aliveList.push(p); });
 
-  // Kişi sayısına göre hedef harita yarıçapına yumuşak geçiş (Lerp)
-  const targetRadius = getTargetArenaRadius(aliveList.length);
-  currentArenaRadius += (targetRadius - currentArenaRadius) * 0.04;
+  const count = aliveList.length;
+  const isCrowded = count > 120;
+  const targetRadius = getTargetArenaRadius(count);
+  currentArenaRadius += (targetRadius - currentArenaRadius) * 0.05;
 
-  for (let i = 0; i < aliveList.length; i++) {
+  const dynamicBaseR = getBaseRadiusForCount(count);
+  let maxBallR = dynamicBaseR;
+
+  for (let i = 0; i < count; i++) {
     const p = aliveList[i];
     if (p.hitFlash > 0) p.hitFlash--;
 
+    // Normal topların boyutunu kalabalığa göre otomatik ayarla (hediye alanlar büyük kalır)
+    if (!p.boosted && Math.abs(p.radius - dynamicBaseR) > 0.5) {
+      p.radius += (dynamicBaseR - p.radius) * 0.1;
+      p.baseRadius = dynamicBaseR;
+    }
+    if (p.radius > maxBallR) maxBallR = p.radius;
+
     const speed = Math.hypot(p.vx, p.vy);
-    if (speed < 2.4) {
+    if (speed < 2.3) {
       const a = Math.atan2(p.vy, p.vx) || Math.random() * Math.PI * 2;
       p.vx = Math.cos(a) * 2.6;
       p.vy = Math.sin(a) * 2.6;
@@ -435,8 +502,12 @@ function updatePhysics() {
     p.y += p.vy;
     if (p.hasSpikes) p.spikeAngle += 0.09;
 
-    p.trail.push({ x: p.x, y: p.y });
-    if (p.trail.length > 6) p.trail.shift();
+    if (!isCrowded) {
+      p.trail.push({ x: p.x, y: p.y });
+      if (p.trail.length > 5) p.trail.shift();
+    } else if (p.trail.length > 0) {
+      p.trail.length = 0;
+    }
 
     // DUVARDAN ZARARSIZ SEKME
     const dx = p.x - cx;
@@ -455,57 +526,89 @@ function updatePhysics() {
       if (dot > 0) {
         p.vx = (p.vx - 2 * dot * nx) * 0.95;
         p.vy = (p.vy - 2 * dot * ny) * 0.95;
-        spawnParticles(p.x + nx * p.radius, p.y + ny * p.radius, '#38d9a9', 3);
+        if (!isCrowded) {
+          spawnParticles(p.x + nx * p.radius, p.y + ny * p.radius, '#38d9a9', 2);
+        }
       }
     }
   }
 
-  // TOPLAR ARASI ÇARPIŞMA
-  for (let i = 0; i < aliveList.length; i++) {
-    for (let j = i + 1; j < aliveList.length; j++) {
-      const a = aliveList[i];
-      const b = aliveList[j];
-      if (!a.alive || !b.alive) continue;
+  // SPATIAL HASH GRID İLE O(N) HIZINDA ÇARPIŞMA TESPİTİ
+  gridCells.clear();
+  const cellSize = Math.max(24, maxBallR * 2.2);
 
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const dist = Math.hypot(dx, dy);
-      const minDist = a.radius + b.radius;
+  for (let i = 0; i < count; i++) {
+    const p = aliveList[i];
+    const gx = Math.floor(p.x / cellSize);
+    const gy = Math.floor(p.y / cellSize);
+    const key = (gx << 16) ^ gy;
+    let bucket = gridCells.get(key);
+    if (!bucket) {
+      bucket = [];
+      gridCells.set(key, bucket);
+    }
+    bucket.push(p);
+  }
 
-      if (dist > 0 && dist < minDist) {
-        const nx = dx / dist;
-        const ny = dy / dist;
+  const now = performance.now();
 
-        const overlap = minDist - dist;
-        const totalMass = a.mass + b.mass;
-        a.x -= nx * overlap * (b.mass / totalMass);
-        a.y -= ny * overlap * (b.mass / totalMass);
-        b.x += nx * overlap * (a.mass / totalMass);
-        b.y += ny * overlap * (a.mass / totalMass);
+  for (let i = 0; i < count; i++) {
+    const a = aliveList[i];
+    if (!a.alive) continue;
+    const gx = Math.floor(a.x / cellSize);
+    const gy = Math.floor(a.y / cellSize);
 
-        const rvx = b.vx - a.vx;
-        const rvy = b.vy - a.vy;
-        const velAlongNormal = rvx * nx + rvy * ny;
+    for (let ox = -1; ox <= 1; ox++) {
+      for (let oy = -1; oy <= 1; oy++) {
+        const key = ((gx + ox) << 16) ^ (gy + oy);
+        const bucket = gridCells.get(key);
+        if (!bucket) continue;
 
-        if (velAlongNormal < 0) {
-          const restitution = 1.02;
-          const impulse = -(1 + restitution) * velAlongNormal / (1 / a.mass + 1 / b.mass);
+        for (let k = 0; k < bucket.length; k++) {
+          const b = bucket[k];
+          if (a === b || !b.alive || a.id > b.id) continue;
 
-          const ix = impulse * nx;
-          const iy = impulse * ny;
-          a.vx -= ix / a.mass;
-          a.vy -= iy / a.mass;
-          b.vx += ix / b.mass;
-          b.vy += iy / b.mass;
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const minDist = a.radius + b.radius;
+          const distSq = dx * dx + dy * dy;
 
-          applyCollisionDamage(a, b);
-          if (b.alive) applyCollisionDamage(b, a);
+          if (distSq > 0 && distSq < minDist * minDist) {
+            const dist = Math.sqrt(distSq);
+            const nx = dx / dist;
+            const ny = dy / dist;
 
-          const midX = (a.x + b.x) / 2;
-          const midY = (a.y + b.y) / 2;
-          spawnParticles(midX, midY, '#ffd175', 5);
-          playHitSound(180 + Math.random() * 70, 0.04, 0.025);
-          updateLeaderboard();
+            const overlap = minDist - dist;
+            const totalMass = a.mass + b.mass;
+            a.x -= nx * overlap * (b.mass / totalMass);
+            a.y -= ny * overlap * (b.mass / totalMass);
+            b.x += nx * overlap * (a.mass / totalMass);
+            b.y += ny * overlap * (a.mass / totalMass);
+
+            const rvx = b.vx - a.vx;
+            const rvy = b.vy - a.vy;
+            const velAlongNormal = rvx * nx + rvy * ny;
+
+            if (velAlongNormal < 0) {
+              const restitution = 1.02;
+              const impulse = -(1 + restitution) * velAlongNormal / (1 / a.mass + 1 / b.mass);
+
+              const ix = impulse * nx;
+              const iy = impulse * ny;
+              a.vx -= ix / a.mass;
+              a.vy -= iy / a.mass;
+              b.vx += ix / b.mass;
+              b.vy += iy / b.mass;
+
+              applyCollisionDamage(a, b, now, isCrowded);
+              if (b.alive) applyCollisionDamage(b, a, now, isCrowded);
+
+              if (!isCrowded) {
+                spawnParticles((a.x + b.x) * 0.5, (a.y + b.y) * 0.5, '#ffd175', 3);
+                playHitSound(180 + Math.random() * 70, 0.04, 0.02);
+              }
+            }
+          }
         }
       }
     }
@@ -514,25 +617,32 @@ function updatePhysics() {
 
 function checkRoundWinner() {
   if (!roundActive) return;
-  const alive = Array.from(players.values()).filter(p => p.alive);
-  if (players.size >= 2 && alive.length === 1) {
+  let aliveCount = 0;
+  let lastChamp = null;
+  players.forEach(p => {
+    if (p.alive) {
+      aliveCount++;
+      lastChamp = p;
+    }
+  });
+
+  if (players.size >= 2 && aliveCount === 1 && lastChamp) {
     roundActive = false;
-    const champ = alive[0];
-    document.getElementById('winName').textContent = `@${champ.name}`;
-    document.getElementById('winStats').textContent = `Kalan Can: ${champ.hp}/${champ.maxHp} HP • Toplam Eleme: ${champ.kills} Kişi`;
+    document.getElementById('winName').textContent = `@${lastChamp.name}`;
+    document.getElementById('winStats').textContent = `Kalan Can: ${lastChamp.hp}/${lastChamp.maxHp} HP • Toplam Eleme: ${lastChamp.kills} Kişi`;
     document.getElementById('winnerOverlay').style.display = 'flex';
     playHitSound(520, 0.3, 0.09);
 
     setTimeout(() => {
       document.getElementById('winnerOverlay').style.display = 'none';
-      players.forEach(p => revivePlayer(p));
+      players.forEach(p => revivePlayer(p, true));
       roundActive = true;
-      updateLeaderboard();
+      lbDirty = true;
     }, 5000);
   }
 }
 
-/* ================= ÇİZİM MOTORU ================= */
+/* ================= AKILLI LOD ÇİZİM MOTORU (BİNLERCE TOPTA 60 FPS) ================= */
 function render() {
   ctx.clearRect(0, 0, W, H);
   ctx.save();
@@ -547,7 +657,7 @@ function render() {
 
   ctx.beginPath();
   ctx.arc(cx, cy, currentArenaRadius, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
   ctx.fill();
 
   ctx.strokeStyle = 'rgba(56, 217, 169, 0.14)';
@@ -559,13 +669,14 @@ function render() {
   ctx.arc(cx, cy, currentArenaRadius, 0, Math.PI * 2);
   ctx.strokeStyle = '#38d9a9';
   ctx.lineWidth = 6;
-  ctx.shadowColor = '#38d9a9';
-  ctx.shadowBlur = 16;
   ctx.stroke();
-  ctx.shadowBlur = 0;
 
-  const aliveCount = Array.from(players.values()).filter(p => p.alive).length;
-  if (aliveCount <= 1) {
+  const aliveList = [];
+  players.forEach(p => { if (p.alive) aliveList.push(p); });
+  const totalAlive = aliveList.length;
+  const isCrowded = totalAlive > 120;
+
+  if (totalAlive <= 1) {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.18)';
     ctx.font = '900 20px sans-serif';
     ctx.textAlign = 'center';
@@ -573,106 +684,118 @@ function render() {
     ctx.fillText('SOHBETE "katıl" YAZARAK ARENAYA GİR!', cx, cy);
   }
 
+  // Parçacıklar
   for (let i = particles.length - 1; i >= 0; i--) {
     const pt = particles[i];
     pt.x += pt.vx; pt.y += pt.vy;
-    pt.life -= 0.035;
+    pt.life -= 0.04;
     if (pt.life <= 0) { particles.splice(i, 1); continue; }
     ctx.globalAlpha = pt.life;
     ctx.fillStyle = pt.color;
-    ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(pt.x - pt.size * 0.5, pt.y - pt.size * 0.5, pt.size, pt.size);
   }
   ctx.globalAlpha = 1;
 
-  players.forEach(p => {
-    if (!p.alive) return;
+  // Oyuncu Topları
+  let drawnLabels = 0;
+  for (let i = 0; i < totalAlive; i++) {
+    const p = aliveList[i];
 
-    for (let t = 0; t < p.trail.length; t++) {
-      const tr = p.trail[t];
-      ctx.globalAlpha = (t / p.trail.length) * 0.22;
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(tr.x, tr.y, p.radius * (t / p.trail.length), 0, Math.PI * 2);
-      ctx.fill();
+    // Sadece az kalabalıkken iz çiz
+    if (!isCrowded && p.trail.length > 1) {
+      for (let t = 0; t < p.trail.length; t++) {
+        const tr = p.trail[t];
+        ctx.globalAlpha = (t / p.trail.length) * 0.2;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(tr.x, tr.y, p.radius * (t / p.trail.length), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
     }
-    ctx.globalAlpha = 1;
 
     if (p.hasSpikes) {
-      const spikes = 12;
+      const spikes = 10;
       ctx.fillStyle = '#f5b942';
       for (let s = 0; s < spikes; s++) {
         const a = p.spikeAngle + (s * Math.PI * 2) / spikes;
-        const sx = p.x + Math.cos(a) * (p.radius + 7);
-        const sy = p.y + Math.sin(a) * (p.radius + 7);
         ctx.beginPath();
-        ctx.arc(sx, sy, 4.5, 0, Math.PI * 2);
+        ctx.arc(p.x + Math.cos(a) * (p.radius + 6), p.y + Math.sin(a) * (p.radius + 6), 4, 0, Math.PI * 2);
         ctx.fill();
       }
     }
 
-    ctx.save();
+    // Küre gövdesi
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
     ctx.fillStyle = p.hitFlash > 0 ? '#ffffff' : p.color;
     ctx.fill();
-    ctx.clip();
 
-    const img = getAvatarImg(p.avatarUrl);
-    if (img && img.complete && img.naturalWidth > 0 && p.hitFlash === 0) {
-      ctx.drawImage(img, p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
-    } else if (p.hitFlash === 0) {
-      ctx.fillStyle = 'rgba(0,0,0,0.28)';
-      ctx.fillRect(p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
-      ctx.fillStyle = '#fff';
-      ctx.font = `900 ${Math.max(12, Math.round(p.radius * 0.65))}px sans-serif`;
+    // Profil fotoğrafı veya baş harf (Yarıçap >= 11 ise)
+    if (p.radius >= 11 && p.hitFlash === 0) {
+      const img = getAvatarImg(p.avatarUrl);
+      if (img && img.complete && img.naturalWidth > 0) {
+        ctx.save();
+        ctx.clip();
+        ctx.drawImage(img, p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
+        ctx.restore();
+      } else if (p.radius >= 15) {
+        ctx.fillStyle = '#fff';
+        ctx.font = `900 ${Math.round(p.radius * 0.62)}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(p.name.slice(0, 2).toUpperCase(), p.x, p.y);
+      }
+    }
+
+    // Dış çerçeve
+    if (p.radius >= 9 || p.boosted) {
+      ctx.lineWidth = p.isBoss ? 4 : (p.radius >= 15 ? 2.2 : 1.2);
+      ctx.strokeStyle = p.isBoss ? '#ffd43b' : '#ffffff';
+      ctx.stroke();
+    }
+
+    // Can Barı
+    if (p.radius >= 9 || p.boosted) {
+      const barW = Math.max(16, p.radius * 1.7);
+      const barH = p.radius >= 15 ? 5 : 3;
+      const barX = p.x - barW * 0.5;
+      const barY = p.y + p.radius + 4;
+      const hpRatio = Math.max(0, Math.min(1, p.hp / p.maxHp));
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      ctx.fillRect(barX, barY, barW, barH);
+      ctx.fillStyle = hpRatio > 0.5 ? '#38d9a9' : (hpRatio > 0.25 ? '#f5b942' : '#ff4d5e');
+      ctx.fillRect(barX, barY, barW * hpRatio, barH);
+    }
+
+    // İsim Etiketi: Az kişide herkese, binlerce kişide ise BOSS + Hediye atanlar + Gerçek izleyiciler + İlk 45 bota
+    const showName = !isCrowded || p.boosted || !p.isBot || drawnLabels < 45;
+    if (showName) {
+      drawnLabels++;
+      const label = `${p.isBoss ? '👑 ' : ''}${p.name} [${p.hp}]`;
+      ctx.font = p.isBoss ? '900 13px sans-serif' : '700 11.5px sans-serif';
+      const textW = ctx.measureText(label).width;
+      const tagY = p.y - p.radius - 13;
+
+      ctx.fillStyle = 'rgba(7, 11, 20, 0.82)';
+      ctx.fillRect(p.x - textW * 0.5 - 5, tagY - 8, textW + 10, 16);
+
+      ctx.fillStyle = p.isBoss ? '#ffd43b' : '#ffffff';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(p.name.slice(0, 2).toUpperCase(), p.x, p.y);
+      ctx.fillText(label, p.x, tagY);
     }
-    ctx.restore();
+  }
 
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-    ctx.lineWidth = p.isBoss ? 4.5 : 2.8;
-    ctx.strokeStyle = p.isBoss ? '#ffd43b' : '#ffffff';
-    ctx.stroke();
-
-    // CAN (HP) BARI
-    const barW = Math.max(38, p.radius * 1.8);
-    const barH = 6;
-    const barX = p.x - barW / 2;
-    const barY = p.y + p.radius + 6;
-    const hpRatio = Math.max(0, Math.min(1, p.hp / p.maxHp));
-
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.fillRect(barX - 1, barY - 1, barW + 2, barH + 2);
-    ctx.fillStyle = hpRatio > 0.5 ? '#38d9a9' : (hpRatio > 0.25 ? '#f5b942' : '#ff4d5e');
-    ctx.fillRect(barX, barY, barW * hpRatio, barH);
-
-    // KULLANICI ADI & HP ETİKETİ
-    const label = `${p.isBoss ? '👑 ' : ''}${p.name} [${p.hp} HP]`;
-    ctx.font = '800 12.5px sans-serif';
-    const textW = ctx.measureText(label).width;
-    const tagY = p.y - p.radius - 16;
-
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.86)';
-    ctx.beginPath();
-    ctx.roundRect(p.x - textW / 2 - 7, tagY - 10, textW + 14, 18, 6);
-    ctx.fill();
-
-    ctx.fillStyle = p.isBoss ? '#ffd43b' : '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, p.x, tagY - 1);
-  });
-
+  // Uçan Hasar / Ödül Metinleri
   for (let i = floatingTexts.length - 1; i >= 0; i--) {
     const ft = floatingTexts[i];
-    ft.y -= 0.95;
-    ft.life -= 0.02;
+    ft.y -= 1.0;
+    ft.life -= 0.024;
     if (ft.life <= 0) { floatingTexts.splice(i, 1); continue; }
     ctx.globalAlpha = ft.life;
-    ctx.font = '900 13.5px sans-serif';
+    ctx.font = '900 13px sans-serif';
     ctx.fillStyle = ft.color;
     ctx.textAlign = 'center';
     ctx.fillText(ft.text, ft.x, ft.y);
@@ -682,20 +805,33 @@ function render() {
   ctx.restore();
 }
 
+/* ================= LİDERLİK TABLOSU (BELİRLİ ARALIKLARLA GÜNCELLENİR) ================= */
 function updateLeaderboard() {
-  const all = Array.from(players.values());
-  const alive = all.filter(p => p.alive);
-  document.getElementById('aliveCount').textContent = `${alive.length} / ${all.length} Kişi`;
+  if (!lbDirty) return;
+  lbDirty = false;
 
-  const sorted = [...alive].sort((a, b) => (b.kills * 15 + b.hp) - (a.kills * 15 + a.hp)).slice(0, 6);
-  const list = document.getElementById('lbList');
-  list.innerHTML = sorted.map((p, idx) => `
+  let aliveCount = 0;
+  const topCandidates = [];
+  players.forEach(p => {
+    if (p.alive) {
+      aliveCount++;
+      topCandidates.push(p);
+    }
+  });
+
+  document.getElementById('aliveCount').textContent = `${aliveCount} / ${players.size} Kişi`;
+
+  topCandidates.sort((a, b) => (b.kills * 15 + b.hp) - (a.kills * 15 + a.hp));
+  const top6 = topCandidates.slice(0, 6);
+
+  document.getElementById('lbList').innerHTML = top6.map((p, idx) => `
     <div class="lb-row">
       <span class="lb-name">${idx === 0 ? '👑' : (idx + 1) + '.'} ${p.name}</span>
       <span class="lb-stats">❤️${p.hp} | ${p.kills} KO</span>
     </div>
   `).join('');
 }
+setInterval(updateLeaderboard, 450);
 
 /* ================= TIKFINITY CANLI YAYIN WEBSOCKET BAĞLANTISI ================= */
 function connectTikFinity() {
@@ -716,13 +852,13 @@ function connectTikFinity() {
         if (ev === 'chat') {
           const msg = d.comment || '';
           if (isJoinCommand(msg)) {
-            joinOrUpdatePlayer(user, avatar);
+            joinOrUpdatePlayer(user, avatar, false, false);
           }
         } else if (ev === 'gift') {
           const coins = (d.diamondCount || 1) * (d.repeatCount || 1);
           if (coins >= 100) applyGiftEffect(user, 'boss', d.giftName, avatar);
           else if (coins >= 10) applyGiftEffect(user, 'spike', d.giftName, avatar);
-          else if (coins >= 2) applyGiftEffect(user, 'speed', d.giftName, avatar);
+          else if (coins >= 5) applyGiftEffect(user, 'speed', d.giftName, avatar);
           else applyGiftEffect(user, 'rose', d.giftName, avatar);
         }
       } catch (err) {}
@@ -736,25 +872,45 @@ function connectTikFinity() {
 }
 connectTikFinity();
 
-/* ================= TEST & YAYIN KONTROLLERİ ================= */
-const SAMPLE_NAMES = [
-  'ahmet_ydz', 'zeynep.k', 'kurtulustas', 'emre_09', 'selinaydin',
-  'kerem_tr', 'elif.dr', 'burak112', 'mert_can', 'ayse_nur',
-  'kaan_bjk', 'deniz_gs', 'arda_fb', 'melis_x', 'efe_pro'
+/* ================= GERÇEKÇİ BOT EKLEME & YAYIN KONTROLLERİ ================= */
+const BOT_FIRST = [
+  'ahmet', 'zeynep', 'emre', 'selin', 'kerem', 'elif', 'burak', 'mert', 'ayse', 'kaan',
+  'deniz', 'arda', 'melis', 'efe', 'irem', 'can', 'berk', 'ece', 'yusuf', 'sude',
+  'omer', 'ceren', 'tolga', 'gizem', 'enes', 'damla', 'onur', 'buse', 'baran', 'nazli',
+  'furkan', 'miray', 'kubilay', 'aleyna', 'sinan', 'tugce', 'volkan', 'esra', 'cihan', 'dilara'
 ];
+const BOT_SUFFIX = [
+  '_ydz', '.k', '_09', '_34', '_35', '_06', '_tr', '.dr', '_1903', '_1905',
+  '_1907', '_pro', '_x', '_bey', '_hanim', '_can', '_nur', '_official', '_resmi', ''
+];
+let botCounter = 1;
 
-function spawnBotWave(count = 6) {
+function spawnBotWave(count = 10) {
+  const silent = count > 25; // Toplu bot basımında ekranı yazıya boğma
   for (let i = 0; i < count; i++) {
-    const base = SAMPLE_NAMES[Math.floor(Math.random() * SAMPLE_NAMES.length)];
-    const name = `${base}_${Math.floor(10 + Math.random() * 89)}`;
-    joinOrUpdatePlayer(name);
+    const f = BOT_FIRST[Math.floor(Math.random() * BOT_FIRST.length)];
+    const s = BOT_SUFFIX[Math.floor(Math.random() * BOT_SUFFIX.length)];
+    const num = Math.random() < 0.45 ? '' : (botCounter++);
+    const name = `${f}${s}${num}`;
+    joinOrUpdatePlayer(name, '', true, silent);
   }
+  lbDirty = true;
+}
+
+function clearBotsOnly() {
+  players.forEach((p, key) => {
+    if (p.isBot) players.delete(key);
+  });
+  lbDirty = true;
 }
 
 function triggerRandomGift(type) {
-  const alive = Array.from(players.values()).filter(p => p.alive);
-  if (alive.length === 0) spawnBotWave(6);
-  const currentAlive = Array.from(players.values()).filter(p => p.alive);
+  const alive = [];
+  players.forEach(p => { if (p.alive) alive.push(p); });
+  if (alive.length === 0) spawnBotWave(10);
+
+  const currentAlive = [];
+  players.forEach(p => { if (p.alive) currentAlive.push(p); });
   const pick = currentAlive[Math.floor(Math.random() * currentAlive.length)];
   if (pick) applyGiftEffect(pick.name, type);
 }
@@ -774,7 +930,8 @@ window.addEventListener('keydown', (e) => {
   else if (e.key === '4') triggerRandomGift('boss');
 });
 
-spawnBotWave(6);
+// Başlangıçta sahne canlı görünsün diye 12 bot ile açılır
+spawnBotWave(12);
 
 function loop() {
   updatePhysics();
